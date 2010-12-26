@@ -1,7 +1,7 @@
 from bincalc import printBits, numberToVarlenByteArray, varlenByteArrayToNumber, numberToByteArray
 
 class BinaryEncoder:
-    items = {} # key:index
+    items = {} # key:int, value:bytearray
     
     def __init__(self):
         pass

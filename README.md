@@ -1,10 +1,11 @@
 *Prototypes only -- please do not yet expect a fully working project. A protocol
 finalization has yet to be made. Feedback is greatly appreciated.*
 
------
+----------
 
-Binary Serializer proposes a **leightweight binary serialization protocol** and provides
-methods for decoding and encoding key-value pairs into a byte stream. 
+This project proposes a **leightweight binary serialization protocol** and provides
+implementations for decoding and encoding multiple key-value pairs into a single byte stream. 
+The main goals are efficiency (minimal byte overhead) and a high encoding and decoding performance. 
 
 This serialization protocol uses **integer-keys** to access the values which can be of
 any primitive data type (including int, float, string, byte array). **Big-endian** 

@@ -1,4 +1,33 @@
-def numberToVarlenByteArray(n):
+# Big-Endian ordering is used everywhere (for all bits in bytes, and for all 
+# bytes in a byte-group (most significant comes first). 
+#
+# Varint means a byte array with the integer value encoded with base-128 varint 
+
+def numberToTrimmedByteArray(n):
+    """
+    Convert number into byte array. Start at the rightmost byte and go 
+    to the left. Trim all most significant bytes if they are empty.
+    """
+    if n == 0:
+        return bytearray([0x00])
+        
+    result = bytearray()
+    while n > 0:
+        result.insert(0, n & 255)
+        n >>= 8        
+    return result
+
+def trimmedByteArrayToNumber(b):
+    result = 0
+    round = 0
+    for byte in b:
+        round += 1
+        if round > 1:
+            result <<= 8
+        result |= byte
+    return result
+    
+def numberToVarint(n):
     """ 
     Converts a number into a variable length byte array (using 7 bits per
     byte, big endian encoding, highest bit is info if last length-byte (0) or 
@@ -20,7 +49,7 @@ def numberToVarlenByteArray(n):
         round += 1
     return result
 
-def varlenByteArrayToNumber(byteArray):
+def varintToNumber(byteArray):
     """
     Converts a varlen bytearray back into a normal number, basically only
     pushing the last 7 bits of each varlen byte onto the result value
@@ -45,13 +74,3 @@ def printBits(byteArray):
             byte >>= 1 
         print "%s%s" % (c1, c2)
         
-def numberToByteArray(n):
-    """
-    Convert number into byte array. Start at the rightmost byte
-    and go to the left.
-    """
-    result = bytearray()
-    while n > 0:
-        result.insert(0, n & 255)
-        n >>= 8        
-    return result
