@@ -72,36 +72,33 @@ Let's have a look at the following example:
      
 Length and Index Bytes - Base 128 Varints 
 -----------------------------------------
+The protocol buffers documentation explains it very well:
 > To understand your simple protocol buffer encoding, you first need to understand varints. Varints are a method of serializing integers using one or more bytes. Smaller numbers take a smaller number of bytes.
 >
 > Each byte in a varint, except the last byte, has the most significant bit (msb) set – this indicates that there are further bytes to come. The lower 7 bits of each byte are used to store the two's complement representation of the number in groups of 7 bits, least significant group first.
 >
 > http://code.google.com/apis/protocolbuffers/docs/encoding.html#varints
 
-Length and index bytes prepend any payload and represent the payload's size in
-bytes and the index used to access it. One varint byte uses 7 bits to indicate 
-the length, and the 8th (highest) bit is used to indicate whether this is the 
-last length-byte (0) or if the next byte is also a length byte (1). Big-endian 
-is used (the highest-value bit is the left one, the lowest value bit is right one):
+Length and index bytes are base-128 varints prepending every payload. They represent 
+the payload's size in bytes and the index used to access it. 
 
     Bit Values: [ x | 64 | 32 | 16 | 8 | 4 | 2 | 1 ]
                   | 
-                  + last-length-byte indicator (0=last, 1=next-also-length-byte)
+                  + last-varint-byte indicator (0=last, 1=next-also-length-byte)
   
-
-Since each length-byte uses only 7 bits for the payload length the following
+Since each varint-byte uses only 7 bits for representing the number, the following
 limits arise:
   
-    One length-byte:  7 bits   = 2^7  = 0..127 payload bytes max
-    Two length-bytes: 2*7 bits = 2^14 = 0..16383 payload bytes max 
+    One varint-byte:  7 bits   = 2^7  = 0..127
+    Two varint-bytes: 2*7 bits = 2^14 = 0..16383  
 
-A payload with 18384 bytes would generate a third length-byte.
+A number greater than 16383 would generate a third varint-byte.
 
-    Payload-length  |  [  length byte 0  ] | [  length byte 1  ]
-    ----------------+----------------------+----------------------  
-    1 byte          |  [ 0 0 0 0 0 0 0 1 ] |
-    127 bytes       |  [ 0 1 1 1 1 1 1 1 ] |                         
-    128 bytes       |  [ 1 0 0 0 0 0 0 1 ] | [ 0 0 0 0 0 0 0 0 ]  
-    255 bytes       |  [ 1 0 0 0 0 0 0 1 ] | [ 0 1 1 1 1 1 1 1 ]
-    256 bytes       |  [ 1 0 0 0 0 0 1 0 ] | [ 0 0 0 0 0 0 0 0 ]
-
+    number  |  [  varint byte 1  ] | [  varint byte 0  ]  
+    --------+----------------------+---------------------  
+        1   |                      | [ 0 0 0 0 0 0 0 1 ]
+      127   |                      | [ 0 1 1 1 1 1 1 1 ]
+      128   |  [ 1 0 0 0 0 0 0 1 ] | [ 0 0 0 0 0 0 0 0 ]  
+      255   |  [ 1 0 0 0 0 0 0 1 ] | [ 0 1 1 1 1 1 1 1 ]
+      256   |  [ 1 0 0 0 0 0 1 0 ] | [ 0 0 0 0 0 0 0 0 ]
+    16383   |  [ 1 1 1 1 1 1 1 1 ] | [ 0 1 1 1 1 1 1 1 ]
