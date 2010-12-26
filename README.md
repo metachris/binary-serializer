@@ -46,16 +46,16 @@ Let's have a look at the following example:
     0x00 | 0x01 | 0x02 | 0x00 | 0x05 | 0x04 | hello | 0x01 | 0x07 | 255
     |      |      |      |      |      |      |       |      |      |
     |      |      |      |      |      |      |       |      |      +- last payload: 255 (1 byte)
-    |      |      |      |      |      |      |       |      +-------- index of last payload: 4
+    |      |      |      |      |      |      |       |      +-------- index of last payload: 7
     |      |      |      |      |      |      |       +--------------- length of last payload: 1 byte
     |      |      |      |      |      |      |
     |      |      |      |      |      |      +- second payload: "hello" (5 bytes)
-    |      |      |      |      |      +-------- index of second payload: 1
+    |      |      |      |      |      +-------- index of second payload: 4
     |      |      |      |      +--------------- length of second payload: 5 bytes
     |      |      |      |
     |      |      |      |       
     |      |      |      +- first payload: 0x00
-    |      |      +-------- index of first payload: 0
+    |      |      +-------- index of first payload: 2
     |      +--------------- length of first payload: 1 byte
     |   
     +- request initializer. unique. used to find start of a binary request
