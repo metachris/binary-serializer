@@ -1,3 +1,8 @@
+*Prototypes only -- please do not yet expect a fully working project. A protocol
+finalization has yet to be made. Feedback is greatly appreciated.*
+
+-----
+
 Binary Serializer proposes a **leightweight binary serialization protocol** and provides
 methods for decoding and encoding key-value pairs into a byte stream. 
 
