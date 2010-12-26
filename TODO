@@ -1,0 +1,14 @@
+General
+=======
+[ ] Test and integrate with all primitive data types
+
+Java
+====
+[ ] Better encoding and decoding
+[ ] Integers, Floats
+[ ] Negative numbers
+
+Python
+======
+[ ] Negative numbers
+[ ] Floats
