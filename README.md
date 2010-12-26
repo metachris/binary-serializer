@@ -1,31 +1,30 @@
-Overview
-========
+Binary Serializer proposes a **leightweight binary serialization protocol** and provides
+methods for decoding and encoding key-value pairs into a byte stream. 
 
-Binary Serializer proposes a leightweight binary serialization protocol and provides
-methods for decoding and encoding key-value pairs into a byte stream. Keys are integers
-only, values may consist of any primitive data type (byte-array, string, int, float, ...).
+This serialization protocol uses **integer-keys** to access the values which can be of
+any primitive data type (including int, float, string, byte array). **Big-endian** 
+ordering is used throughout the protocol for all bits in a byte, and all bytes in 
+byte-groups (i.e. the most significant comes first, followed by less significant).
 
-The serialization works similar to [Protocol Buffers] [1], using a variable
+The serialization works **similar to [Protocol Buffers] [1]**, using a variable
 amount of length-bytes indicating the number of bytes to read for the next
-payload (base-128 varints). Protocol Buffers differs in two significant ways:
-
-* Protobuf provides object boilerplates (.proto files) which have to be compiled
-  into class prototypes before being able to use it, whereas this project provides a 
-  key-value dictionary using integer-only keys. 
-  
-  This approach combines the performance and efficiency of protocol buffers with the 
-  flexibility of json, while greatly reducing the code needed to implement the protocol.
-  
-* Protobuf reverses the bytes in base-128 varints, this project keeps the natural
-  byte order (most significant byte comes first in the bytestream).
- 
-This serialization protocol furthermore provides a way to separate multiple 
-stacked requests via the 0x00 request start byte which acts as delimiter. 
-This is useful in case of having multiple requests arrive at once when reading 
-from a socket, which often happens with mobile devices when sending many requests 
-in a short time.
+payload (base-128 varints). Protocol Buffers differs in three significant ways:
 
   [1]: http://code.google.com/p/protobuf/
+
+* Protobuf requires object boilerplates (.proto files) to be compiled into object prototypes 
+  before being able to use it, whereas this project provides a runtime key-value dictionary 
+  using integer-only keys. This approach combines the performance and efficiency of protocol 
+  buffers with some of the flexibility of json, while greatly reducing the code needed to 
+  implement the protocol. 
+ 
+* This serialization protocol provides a way to separate multiple concatenated requests 
+  via the 0x00 request start byte which acts as request delimiter.
+  
+* Protobuf stores the bytes of base-128 varints in little-endian byte-groups (least
+  significant byte first), whereas this project uses big-endian everywhere including 
+  for the order in varint byte-groups (most significant byte comes first in the bytestream).
+
 
 Example
 -------
