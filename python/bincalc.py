@@ -1,11 +1,9 @@
+#
 # Big-Endian ordering is used everywhere (for all bits in bytes, and for all 
 # bytes in a byte-group (most significant comes first). 
 #
-# Varint means a byte array with the integer value encoded with base-128 varint 
-#
-# Todo
-# ----
-# [ ] decompressNumber always reverts into an int
+# Varint means a byte array with the integer value encoded with base-128 varint,
+# with the most significant bytes coming first (big-endian).
 #
 
 def compressNumber(n):
@@ -27,13 +25,13 @@ def decompressNumber(b):
     Compress number into byte array by popping the most significant bytes if 
     empty. Start at the rightmost (least significant) byte and move to the left.
     
-    int(b) will return a long value if the number uses more bytes:
-        >>> type(int(1 << 62))
-        <type 'int'>
-        >>> type(int(1 << 63))
-        <type 'long'>
+    Sidenote: int(b) will return a long value if the number uses more bytes:
+    >>> type(int(1 << 62))
+    <type 'int'>
+    >>> type(int(1 << 63))
+    <type 'long'>
         
-    int() does not work well on a bytearray(b'\x00'), therefore only at the end
+    int() does not work on a bytearray(b'\x00') though, therefore not used
     """   
     result = 0
     round = 0
@@ -68,8 +66,9 @@ def numberToVarint(n):
 
 def varintToNumber(byteArray):
     """
-    Converts a varlen bytearray back into a normal number, basically only
-    pushing the last 7 bits of each varlen byte onto the result value
+    Converts a varlen bytearray back into a normal number, starting at the most 
+    significant varint byte, adding it to the result, and pushing the result 
+    7 bits to the left each subsequent round.
     """
     number = 0
     round = 0
@@ -77,11 +76,13 @@ def varintToNumber(byteArray):
         round += 1
         if round > 1:
             number <<= 7
-        number |= byte & 127 # only use the lower 7 bits of this byte (big endian)
+        number |= byte & 127 # only use the lower 7 bits
     return number        
     
 def printBits(byteArray):
-    # Print all bits of this bytearray
+    """
+    Print all bits of a bytearray
+    """
     print repr(byteArray)
     for byte in byteArray:
         c1 = "%3i | " % byte
@@ -90,4 +91,3 @@ def printBits(byteArray):
             c2 = "%s%s" % ("1" if byte & 1 else "0", c2)
             byte >>= 1 
         print "%s%s" % (c1, c2)
-        

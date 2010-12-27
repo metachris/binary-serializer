@@ -34,9 +34,10 @@ class BinaryDecoder:
                 function = function_mapper[function]            
             self.blueprint[index] = (function, key)
         
-    def getVarlenInfo(self):
+    def readVarint(self):
         """
-        Pops self.byteArray from 0..n and extracts the current value.
+        Parse self.byteArray (pop from 0..n) to extract the current varint bytes.
+        Returns the normal number.
         """
         number = 0
         round = 0
@@ -49,7 +50,7 @@ class BinaryDecoder:
             if cur_byte >> 7 == 1:
                 number |= cur_byte & 127 # remove length-info bit
             else:
-                # last length byte. append and exit
+                # last varint byte because msb is 0. append and exit
                 number |= cur_byte
                 break
                 
@@ -57,20 +58,26 @@ class BinaryDecoder:
     
     def decode(self, byteArray):
         """
-        Decodes a given request in form of a bytearray, and
-        extracts the content into a dictionary mapped to the 
-        original index keys.
+        Decodes a given binary request (bytearray), and extracts the content into a 
+        dictionary mapped to the original index keys. This function behaves differently
+        with and without blueprints:
+        
+        No Blueprints:            
+        - values are bytearrays
+        
+        With Blueprints:
+        - values are casted to their original data type
         """
         self.items = {}
         self.byteArray = byteArray
         self.byteArray.pop(0) # request start byte 0x00
         
         while len(self.byteArray) > 0:
-           payload_length = self.getVarlenInfo()
-           index = self.getVarlenInfo()
+           payload_length = self.readVarint()
+           index = self.readVarint()
            payload = self.byteArray[:payload_length]
            self.byteArray[:payload_length] = []
-           # If object blueprint available we can decode the bytearray now
+           # If object blueprint available we can cast the bytearray now
            if self.blueprint:
                payload = self.blueprint[index][0](payload)
            self.items[index] = payload
