@@ -12,9 +12,6 @@ class BinaryDecoder:
     # Blueprint 
     blueprint = None
     
-    # map blueprint_str to items_index 
-    items_blueprint_map = {} 
-    
     # Temporary storage of raw request   
     byteArray = bytearray()
     

@@ -19,10 +19,11 @@ payload (base-128 varints). Protocol Buffers differs in three significant ways:
   [1]: http://code.google.com/p/protobuf/
 
 * Protobuf requires object boilerplates (.proto files) to be compiled into object prototypes 
-  before being able to use it, whereas this project provides a runtime key-value dictionary 
-  using integer-only keys. This approach combines the performance and efficiency of protocol 
-  buffers with some of the flexibility of json, while greatly reducing the code needed to 
-  implement the protocol. 
+  before being able to use it, whereas this project provides a runtime key-value dictionary. 
+  This approach combines the performance and efficiency of protocol buffers with some of the 
+  flexibility of json, while greatly reducing the code needed to implement the protocol. The 
+  downside is we don't automatically know the data type of a payload unless we're loading a 
+  blueprint.  
  
 * This serialization protocol provides a way to separate multiple concatenated requests 
   via the 0x00 request start byte which acts as request delimiter.
