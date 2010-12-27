@@ -1,6 +1,7 @@
 from encoder import BinaryEncoder
 from decoder import BinaryDecoder
 from bincalc import *
+from example_blueprints import TestRequest
 
 import random
 import unittest
@@ -55,7 +56,7 @@ class TestSequenceFunctions(unittest.TestCase):
         print ">", repr(x)        
         print "---\nRestoring:"
         
-        e = BinaryDecoder()
+        e = BinaryDecoder(TestRequest)
         o = e.decode(x)
         
         print ">", o
@@ -64,48 +65,11 @@ class TestSequenceFunctions(unittest.TestCase):
         print " index |                  orig |                   restored | type "
         print " ------+-----------------------+----------------------------+----- "
         for key in test:
-            restored = None
-            if type(test[key]) in [str]:
-                restored = str(o[key]) 
-            elif type(test[key]) in [unicode]:
-                restored = unicode(o[key]) 
-            elif type(test[key]) in [int, long]:
-                restored = decompressNumber(o[key]) 
-            print "   %3i |%22s |%27s | %s   " % (key, repr(test[key]), repr(o[key]), type(restored))
-            self.assertTrue(test[key] == restored)
+            print "   %3i |%22s |%27s | %s   " % (key, repr(test[key]), repr(o[key]), type(o[key]))
+            self.assertTrue(test[key] == o[key])
                 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
     unittest.TextTestRunner(verbosity=3).run(suite)
 
-    #unittest.main()
-    exit(0)
-    
-    
-    printBits(numberToVarlenByteArray(16384))
-    exit(0)
-    
-    b = BinaryEncoder()
-    b.put(1, "hello world")
-    b.put(7, "test")
-    b.put(9, 256)
-    #b.put(128, "a"*128)
-    x = b.encode()
-    
-    print repr(x)        
-    print "---"
-    
-    e = BinaryDecoder()
-    o = e.decode(x)
-    print o
-    #print int(o[9])
-    exit(0)
-    
-    i = [0x00, 0x01, 0x02, 127, 128, 255, 256, 1024]
-    
-    for x in i:
-        print "value:", x
-        k = numberToVarlenByteArray(x)
-        printBits(k)
-        print "rev:", varlenByteArrayToNumber(k)
-        print
+    # printBits(numberToVarlenByteArray(16384))

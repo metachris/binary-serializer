@@ -1,16 +1,42 @@
-from bincalc import *
-        
+import bincalc
+
+function_mapper = {
+    int: bincalc.decompressNumber,
+    long: bincalc.decompressNumber
+}
+
 class BinaryDecoder:
-    items = {} # key:index
+    # final item dictionary. key:index, value:bytearray 
+    items = {}
+    
+    # Blueprint 
+    blueprint = None
+    
+    # map blueprint_str to items_index 
+    items_blueprint_map = {} 
+    
+    # Temporary storage of raw request   
     byteArray = bytearray()
     
     def __init__(self):
         pass
- 
+    
+    def __init__(self, blueprint):
+        print "Blueprint:", blueprint
+        self.loadBlueprint(blueprint)
+    
+    def loadBlueprint(self, blueprint):
+        """ Map primitive functions to helper functions (decompressNumber, etc) """
+        self.blueprint = {}
+        for index in blueprint:
+            function, key = blueprint[index]
+            if function in function_mapper:
+                function = function_mapper[function]            
+            self.blueprint[index] = (function, key)
+        
     def getVarlenInfo(self):
         """
-        Parses self.byteArray from 0..n and extracts the current
-        value.
+        Pops self.byteArray from 0..n and extracts the current value.
         """
         number = 0
         round = 0
@@ -44,6 +70,9 @@ class BinaryDecoder:
            index = self.getVarlenInfo()
            payload = self.byteArray[:payload_length]
            self.byteArray[:payload_length] = []
+           # If object blueprint available we can decode the bytearray now
+           if self.blueprint:
+               payload = self.blueprint[index][0](payload)
            self.items[index] = payload
            
         return self.items
