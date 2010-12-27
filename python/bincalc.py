@@ -78,7 +78,15 @@ def varintToNumber(byteArray):
             number <<= 7
         number |= byte & 127 # only use the lower 7 bits
     return number        
+
+def unicodeToByteArray(u):
+    """ Simple conversion of unicode to bytearray: utf8 encoding """ 
+    return bytearray(u.encode("utf-8"))
     
+def byteArrayToUnicode(byteArray):
+    """ Simple conversion of bytearray to unicode: utf8 decoding and casting """ 
+    return unicode(byteArray.decode("utf-8"))
+        
 def printBits(byteArray):
     """
     Print all bits of a bytearray

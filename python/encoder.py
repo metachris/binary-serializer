@@ -9,20 +9,23 @@
 #   - float, complex
 #
 
-from bincalc import *
+import bincalc
 
 class BinaryEncoder:
     items = {} # key:int, value:bytearray        
     
     def put(self, index, value):
         if type(value) == int or type(value) == long:
-            self.items[index] = compressNumber(value)
+            self.items[index] = bincalc.compressNumber(value)
+            
         elif type(value) == bytearray or type(value) == str:
             self.items[index] = bytearray(value)
+            
         elif type(value) == unicode:
-            self.items[index] = bytearray(value.encode("utf-8"))            
+            self.items[index] = bincalc.unicodeToByteArray(value)
+            
         else:
-            raise NotImplementedError("Type %s not supported" % type(value))
+            raise NotImplementedError("%s not supported" % type(value))
         
     def encode(self):
         """ Returns a single byte array including all the payloads and indexes"""
@@ -34,10 +37,10 @@ class BinaryEncoder:
             print "-", index, "\t>", repr(item)
             
             # append length bytes
-            result.extend(numberToVarint(len(item)))
+            result.extend(bincalc.numberToVarint(len(item)))
             
             # append index bytes
-            result.extend(numberToVarint(index))
+            result.extend(bincalc.numberToVarint(index))
             
             # append content bytes
             result.extend(item)

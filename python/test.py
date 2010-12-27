@@ -10,6 +10,14 @@ class TestSequenceFunctions(unittest.TestCase):
     def setUp(self):
         self.seq = range(10)
 
+    def test_0_unicodeByteArray(self):
+        tests = [u"asd", u"123", u"$#%", u"\u20ac", u"\u024B62"]
+        for test in tests:
+            x = unicodeToByteArray(test)
+            restored = byteArrayToUnicode(x)
+            # print repr(test), repr(x), repr(restored), restored
+            self.assertEqual(test, restored)
+
     def test_1_numberToByteArray(self):
         # bincalc.py
         print
@@ -21,7 +29,8 @@ class TestSequenceFunctions(unittest.TestCase):
             b = compressNumber(orig)
             restored = decompressNumber(b)
             print "   %5i | %26s | %s" % (orig, repr(b), repr(restored))
-            self.assertTrue(orig == restored)
+            # self.assertTrue(orig == restored)
+            self.assertEqual(orig, restored)
 
     def test_2_numberToVarint(self):
         # bincalc.py
@@ -33,15 +42,15 @@ class TestSequenceFunctions(unittest.TestCase):
             b = numberToVarint(orig)
             restored = varintToNumber(b)
             print "   %5i | %26s | %s" % (orig, repr(b), repr(restored))
-            self.assertTrue(orig == restored)
+            self.assertEqual(orig, restored)
 
     def test_3_encoder(self):
-        # encoder.py
+        # encoder.py + decoder.py
         test = {
             1: "hello world",
-            7: u"test2",
+            7: u"test2\u20ac",
             9: 1<<63,
-            128: 255
+            128: 255,
             #b.put(128, "a"*128)
         }
         
@@ -65,8 +74,8 @@ class TestSequenceFunctions(unittest.TestCase):
         print " index |                  orig |                   restored | type "
         print " ------+-----------------------+----------------------------+----- "
         for key in test:
-            print "   %3i |%22s |%27s | %s   " % (key, repr(test[key]), repr(o[key]), type(o[key]))
-            self.assertTrue(test[key] == o[key])
+            print "   %3i |%22s |%27s | %s   " % (key, test[key], o[key], type(o[key]))
+            self.assertEqual(test[key], o[key])
                 
 if __name__ == '__main__':
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
