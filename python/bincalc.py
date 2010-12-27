@@ -2,11 +2,16 @@
 # bytes in a byte-group (most significant comes first). 
 #
 # Varint means a byte array with the integer value encoded with base-128 varint 
+#
+# Todo
+# ----
+# [ ] decompressNumber always reverts into an int
+#
 
-def numberToTrimmedByteArray(n):
+def compressNumber(n):
     """
-    Convert number into byte array. Start at the rightmost byte and go 
-    to the left. Trim all most significant bytes if they are empty.
+    Compress number into byte array by popping the most significant bytes if 
+    empty. Start at the rightmost (least significant) byte and move to the left. 
     """
     if n == 0:
         return bytearray([0x00])
@@ -17,7 +22,19 @@ def numberToTrimmedByteArray(n):
         n >>= 8        
     return result
 
-def trimmedByteArrayToNumber(b):
+def decompressNumber(b):
+    """
+    Compress number into byte array by popping the most significant bytes if 
+    empty. Start at the rightmost (least significant) byte and move to the left.
+    
+    int(b) will return a long value if the number uses more bytes:
+        >>> type(int(1 << 62))
+        <type 'int'>
+        >>> type(int(1 << 63))
+        <type 'long'>
+        
+    int() does not work well on a bytearray(b'\x00'), therefore only at the end
+    """   
     result = 0
     round = 0
     for byte in b:

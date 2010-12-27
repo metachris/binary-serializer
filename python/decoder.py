@@ -1,4 +1,4 @@
-from bincalc import printBits, numberToVarlenByteArray, varlenByteArrayToNumber
+from bincalc import *
         
 class BinaryDecoder:
     items = {} # key:index
