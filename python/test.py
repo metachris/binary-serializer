@@ -1,14 +1,14 @@
-from encoder import BinaryEncoder
-from decoder import BinaryDecoder
-from bincalc import *
-from example_blueprints import TestRequest
-
 import random
 import unittest
 
+from encoder import BinaryEncoder
+from decoder import BinaryDecoder
+from example_blueprints import TestRequest
+from bincalc import *
+
 class TestSequenceFunctions(unittest.TestCase):
     def setUp(self):
-        self.seq = range(10)
+        pass
 
     def test_0_unicodeByteArray(self):
         tests = [u"asd", u"123", u"$#%", u"\u20ac", u"\u024B62"]
@@ -29,7 +29,6 @@ class TestSequenceFunctions(unittest.TestCase):
             b = compressNumber(orig)
             restored = decompressNumber(b)
             print "   %5i | %26s | %s" % (orig, repr(b), repr(restored))
-            # self.assertTrue(orig == restored)
             self.assertEqual(orig, restored)
 
     def test_2_numberToVarint(self):
@@ -37,6 +36,7 @@ class TestSequenceFunctions(unittest.TestCase):
         print
         print "  number |                    encoded | restored"
         print "---------+----------------------------+----------"
+
         tests = [0, 1, 127, 128, 255, 256, 1024, 65535, 65536, 1<<62, 1<<63]
         for orig in tests:
             b = numberToVarint(orig)
