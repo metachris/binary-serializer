@@ -52,16 +52,16 @@ Let's build a simple example request:
 
 **Encoded Request**
 
-    00 13 | 05 h e l l o | 01 123 | 01 00 | 05 w o r l d
+    00 0D | 05 h e l l o | 01 123 | 01 00 | 05 w o r l d
 
 - 1 package start byte (0x00)
-- 1 package type byte (0x13)
+- 1 package type byte (0x0D)
+- 1 length byte / payload
 - 4 payloads, together 12 payload bytes
-- 1 index byte / payload
 
 **Resulting package**
 
-    0x00   0x13   0x05   hello  0x01   123    0x10    0x00   0x05   world
+    0x00   0x0D   0x05   hello  0x01   123    0x10    0x00   0x05   world
     |      |      |      |      |      |      |       |      |      |
     |      |      |      |      |      |      |       |      |      +- last payload: "world"
     |      |      |      |      |      |      |       |      +-------- length of last payload: 5
@@ -75,7 +75,7 @@ Let's build a simple example request:
     |      |      |      +- first payload: "hello"
     |      |      +-------- length of first payload: 5 bytes
     |      |    
-    |      +- package type
+    |      +- package type: 13 = 0x0D
     +-------- package start byte
 
 **Pseude code for the serialization process**
