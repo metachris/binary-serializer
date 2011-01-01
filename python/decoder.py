@@ -1,8 +1,8 @@
 import bincalc
 
 function_mapper = {
-    int: bincalc.decompressNumber,
-    long: bincalc.decompressNumber,
+    int: bincalc.bytesToNumber,
+    long: bincalc.bytesToNumber,
     unicode: bincalc.byteArrayToUnicode, # unicode(bytearray.decode("utf-8"))
     # str: does not need conversion, works directly
 }

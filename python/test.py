@@ -4,21 +4,28 @@ import unittest
 from encoder import BinaryEncoder
 from decoder import BinaryDecoder
 from example_blueprints import TestRequest
-from bincalc import *
+import bincalc
 
 class TestSequenceFunctions(unittest.TestCase):
     def setUp(self):
         pass
 
-    def test_0_unicodeByteArray(self):
+    def test_00_unicodeByteArray(self):
         tests = [u"asd", u"123", u"$#%", u"\u20ac", u"\u024B62"]
-        for test in tests:
-            x = unicodeToByteArray(test)
-            restored = byteArrayToUnicode(x)
+        for orig in tests:
+            x = bincalc.unicodeToByteArray(orig)
+            restored = bincalc.byteArrayToUnicode(x)
             # print repr(test), repr(x), repr(restored), restored
-            self.assertEqual(test, restored)
-
-    def test_1_numberToByteArray(self):
+            self.assertEqual(orig, restored)
+    
+    def test_01_zigZag(self):
+        test = [i for i in xrange(-1500, 1500)]
+        for orig in test:
+            z = bincalc.numberToZigZag(orig)
+            restored = bincalc.zigZagToNumber(z)
+            self.assertEqual(orig, restored)
+            
+    def test_02_numberToByteArray(self):
         # bincalc.py
         print
         print "  number |                    encoded | restored"
@@ -26,12 +33,12 @@ class TestSequenceFunctions(unittest.TestCase):
 
         tests = [0, 1, 127, 128, 255, 256, 1024, 65535, 65536, 1<<62, 1<<63]
         for orig in tests:
-            b = compressNumber(orig)
-            restored = decompressNumber(b)
+            b = bincalc.numberToBytes(orig)
+            restored = bincalc.bytesToNumber(b)
             print "   %5i | %26s | %s" % (orig, repr(b), repr(restored))
             self.assertEqual(orig, restored)
 
-    def test_2_numberToVarint(self):
+    def test_03_numberToVarint(self):
         # bincalc.py
         print
         print "  number |                    encoded | restored"
@@ -39,12 +46,12 @@ class TestSequenceFunctions(unittest.TestCase):
 
         tests = [0, 1, 127, 128, 255, 256, 1024, 65535, 65536, 1<<62, 1<<63]
         for orig in tests:
-            b = numberToVarint(orig)
-            restored = varintToNumber(b)
+            b = bincalc.numberToVarint(orig)
+            restored = bincalc.varintToNumber(b)
             print "   %5i | %26s | %s" % (orig, repr(b), repr(restored))
             self.assertEqual(orig, restored)
 
-    def test_3_encoder(self):
+    def test_10_encoder(self):
         # encoder.py + decoder.py
         test = {
             1: "hello world",

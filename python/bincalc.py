@@ -1,15 +1,44 @@
 #
-# Big-Endian ordering is used everywhere (for all bits in bytes, and for all 
-# bytes in a byte-group (most significant comes first). 
+# Filename
 #
-# Varint means a byte array with the integer value encoded with base-128 varint,
-# with the most significant bytes coming first (big-endian).
+#   bincalc.py
+#
+# Author
+#
+#   Chris Hager <chris@metachris.org>
+#
+# Description
+#
+#   Utils for encoding the bit representations of numbers
+#
+#   - Varint: Base 128 variable length integers (using only lower 7 bits of the byte)
+#   - ZigZag: Transforming negative numbers into positives (0=0, 1=2, 2=4, -1=1, -2=3, ...)
+#   - numberToBytes: Minimal byte representation of a number, without leading empty bytes 
+#
+#   Big-Endian ordering is used everywhere (for all bits in bytes, and for all 
+#   bytes in a byte-group (most significant comes first). 
+#
 #
 
-def compressNumber(n):
+def numberToZigZag(n):
     """
-    Compress number into byte array by popping the most significant bytes if 
-    empty. Start at the rightmost (least significant) byte and move to the left. 
+    ZigZag-Encodes a number:
+       -1 = 1
+       -2 = 3
+        0 = 0
+        1 = 2
+        2 = 4
+    """
+    return (n << 1) ^ (n >> 31)
+
+def zigZagToNumber(z):
+    """ Reverses ZigZag encoding """
+    return (z >> 1) if not z & 1 else -(z+1 >> 1)
+    
+def numberToBytes(n):
+    """
+    Returns the bytes representing the number, without most significant bytes if  
+    empty. Starts at the rightmost (least significant) byte and traverse to the left. 
     """
     if n == 0:
         return bytearray([0x00])
@@ -20,18 +49,10 @@ def compressNumber(n):
         n >>= 8        
     return result
 
-def decompressNumber(b):
+def bytesToNumber(b):
     """
-    Compress number into byte array by popping the most significant bytes if 
-    empty. Start at the rightmost (least significant) byte and move to the left.
-    
-    Sidenote: int(b) will return a long value if the number uses more bytes:
-    >>> type(int(1 << 62))
-    <type 'int'>
-    >>> type(int(1 << 63))
-    <type 'long'>
-        
-    int() does not work on a bytearray(b'\x00') though, therefore not used
+    Restoring the stripped bytes of an int or long into Python's built-in data types
+    int or long.
     """   
     result = 0
     round = 0

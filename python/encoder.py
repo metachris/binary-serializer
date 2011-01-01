@@ -16,7 +16,7 @@ class BinaryEncoder:
     
     def put(self, index, value):
         if type(value) == int or type(value) == long:
-            self.items[index] = bincalc.compressNumber(value)
+            self.items[index] = bincalc.numberToBytes(value)
             
         elif type(value) == bytearray or type(value) == str:
             self.items[index] = bytearray(value)
